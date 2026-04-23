@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Fetch ffmpeg.wasm binaries into /public/vendor/ffmpeg/ so the /media tools
+# can serve them same-origin. Run once after checkout, and on deploy hosts.
+set -euo pipefail
+
+VERSION="0.12.6"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+MT="$ROOT/public/vendor/ffmpeg/mt"
+ST="$ROOT/public/vendor/ffmpeg/st"
+mkdir -p "$MT" "$ST"
+
+fetch () {
+  local url="$1" dest="$2"
+  if [ -s "$dest" ]; then
+    echo "skip $dest (exists)"
+  else
+    echo "get  $dest"
+    curl -sSfL -o "$dest" "$url"
+  fi
+}
+
+echo "==> multi-threaded core @ffmpeg/core-mt@$VERSION"
+fetch "https://unpkg.com/@ffmpeg/core-mt@$VERSION/dist/umd/ffmpeg-core.js"        "$MT/ffmpeg-core.js"
+fetch "https://unpkg.com/@ffmpeg/core-mt@$VERSION/dist/umd/ffmpeg-core.wasm"      "$MT/ffmpeg-core.wasm"
+fetch "https://unpkg.com/@ffmpeg/core-mt@$VERSION/dist/umd/ffmpeg-core.worker.js" "$MT/ffmpeg-core.worker.js"
+
+echo "==> single-threaded fallback @ffmpeg/core@$VERSION"
+fetch "https://unpkg.com/@ffmpeg/core@$VERSION/dist/umd/ffmpeg-core.js"   "$ST/ffmpeg-core.js"
+fetch "https://unpkg.com/@ffmpeg/core@$VERSION/dist/umd/ffmpeg-core.wasm" "$ST/ffmpeg-core.wasm"
+
+echo
+echo "done. sizes:"
+du -h "$MT" "$ST" | sed 's/^/  /'

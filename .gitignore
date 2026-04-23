@@ -39,6 +39,9 @@
 
 /node_modules
 
+# Vendored ffmpeg.wasm binaries (~65MB). Fetch with `bin/fetch_ffmpeg`.
+/public/vendor/ffmpeg/
+
 # Internal product/design briefs — keep out of public repo.
 # Remove these lines or `git add -f` them if you want them tracked.
 /TOOLBENCH_BRIEF*.md
