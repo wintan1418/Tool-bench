@@ -1,0 +1,63 @@
+<table class="tb-table">
+  <thead>
+    <tr>
+      <th>Host</th>
+      <th>Status</th>
+      <th>Code</th>
+      <th>Latency</th>
+      <th>Last 24</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% board.hosts.each do |host| %>
+      <% c = checks[host] %>
+      <tr>
+        <td>
+          <div style="font-weight: 600; color: var(--tb-ink);"><%= host %></div>
+          <div class="tb-mono tb-muted" style="font-size: 11px; margin-top: 2px;">
+            <% if c %>
+              checked from <%= c.region %> · <%= time_ago_in_words(c.checked_at) %> ago
+            <% else %>
+              checking…
+            <% end %>
+          </div>
+        </td>
+        <td>
+          <% if c.nil? %>
+            <span class="tb-pill tb-pill-neu">pending</span>
+          <% elsif c.status == "up" %>
+            <span class="tb-pill tb-pill-ok">up</span>
+          <% elsif c.status == "slow" %>
+            <span class="tb-pill tb-pill-slow">slow</span>
+          <% else %>
+            <span class="tb-pill tb-pill-down">down</span>
+          <% end %>
+        </td>
+        <td class="tb-mono" style="font-size: 13px;">
+          <%= c&.http_code || "—" %>
+        </td>
+        <td class="tb-mono" style="font-size: 13px;
+          color: <%= c&.status == "down" ? "var(--tb-red)" : c&.status == "slow" ? "var(--tb-amber)" : "var(--tb-ink-2)" %>;">
+          <%= c&.latency_ms ? "#{c.latency_ms} ms" : "—" %>
+        </td>
+        <td>
+          <span class="tb-sparkline">
+            <% bars = sparklines[host] || [] %>
+            <% (24 - bars.size).times do %>
+              <span class="tb-sparkline-bar" style="height: 4px;"></span>
+            <% end %>
+            <% bars.each do |s| %>
+              <% h = case s
+                     when "up"   then 14
+                     when "slow" then 10
+                     when "down" then 18
+                     else 6
+                     end %>
+              <span class="tb-sparkline-bar is-<%= s %>" style="height: <%= h %>px;"></span>
+            <% end %>
+          </span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

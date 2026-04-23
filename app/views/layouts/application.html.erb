@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : (page_title || "Toolbench") %></title>
+    <% if meta_description %><meta name="description" content="<%= meta_description %>"><% end %>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Toolbench">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#f7f6f3">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+
+  <body data-controller="receipt">
+    <%= render "shared/header" %>
+
+    <main class="tb-shell tb-page">
+      <% if flash[:alert] %>
+        <div class="tb-card tb-card-pad" style="margin-bottom: 20px; border-color: var(--tb-red); color: var(--tb-red-deep);">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+      <% if flash[:notice] %>
+        <div class="tb-card tb-card-pad" style="margin-bottom: 20px; border-color: var(--tb-green);">
+          <%= flash[:notice] %>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <%= render "shared/footer" %>
+  </body>
+</html>

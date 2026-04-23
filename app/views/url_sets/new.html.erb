@@ -1,0 +1,97 @@
+<section data-controller="url-opener">
+  <div class="tb-eyebrow">Tool 04</div>
+  <h1 class="tb-h1" style="font-size: 48px; margin-top: 14px;">Bulk URL opener</h1>
+  <p class="tb-text" style="margin-top: 10px; max-width: 60ch;">
+    Paste a list of URLs — any format. Open them all in new tabs, or save the set as a
+    shareable link you can reuse.
+  </p>
+
+  <div class="tb-tool-layout" style="grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 28px;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
+        <div class="tb-eyebrow">Paste URLs · any format</div>
+        <div style="display: flex; gap: 6px;">
+          <button class="tb-btn tb-btn-quiet" data-action="click->url-opener#loadExample">Load example</button>
+          <button class="tb-btn tb-btn-quiet" data-action="click->url-opener#clear">Clear</button>
+        </div>
+      </div>
+
+      <%= form_with url: url_sets_path, method: :post, local: false, id: "url-set-form" do |f| %>
+        <%= f.text_area :urls,
+              class: "tb-textarea",
+              rows: 14,
+              placeholder: "Paste URLs here — one per line, commas, markdown links, bullet lists, anything.\nLines beginning with # are ignored.",
+              data: {
+                "url-opener-target": "textarea",
+                action: "input->url-opener#parse"
+              } %>
+
+        <div class="tb-mono tb-muted" style="font-size: 12px; margin-top: 8px;">
+          <span data-url-opener-target="stats">0 urls detected</span>
+        </div>
+      <% end %>
+    </div>
+
+    <aside class="tb-stack-14">
+      <div class="tb-card">
+        <div class="tb-card-pad" style="padding-bottom: 8px;">
+          <div class="tb-eyebrow">Parsed queue</div>
+        </div>
+        <div data-url-opener-target="list" style="max-height: 320px; overflow-y: auto;">
+          <div class="tb-mono tb-muted" style="padding: 20px 22px; font-size: 12px;">
+            Your parsed links will appear here.
+          </div>
+        </div>
+        <div class="tb-card-pad" style="padding-top: 16px; border-top: 1px dashed var(--tb-line);">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div>
+              <div class="tb-eyebrow" style="margin-bottom: 4px;">Delay</div>
+              <div class="tb-tabs">
+                <button class="tb-tab is-active" data-action="click->url-opener#setDelay" data-delay="0">0ms</button>
+                <button class="tb-tab" data-action="click->url-opener#setDelay" data-delay="150">150ms</button>
+                <button class="tb-tab" data-action="click->url-opener#setDelay" data-delay="500">500ms</button>
+              </div>
+            </div>
+            <span style="flex: 1;"></span>
+            <button class="tb-btn tb-btn-primary tb-btn-lg" data-action="click->url-opener#openAll" data-url-opener-target="openBtn" disabled>
+              Open all (<span data-url-opener-target="countChip">0</span>)
+            </button>
+          </div>
+          <div class="tb-mono tb-muted" style="font-size: 11px; margin-top: 10px;">
+            Your browser will ask permission to open multiple pop-ups — allow it once for this site.
+          </div>
+        </div>
+      </div>
+
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow">Save as set</div>
+        <div class="tb-text-sm" style="margin-top: 6px; margin-bottom: 10px;">
+          Save the current list to a short link so you can re-open it tomorrow, or share with a teammate.
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input class="tb-input" placeholder="mon-am"
+                 data-url-opener-target="nameInput"
+                 style="font-size: 14px;">
+          <button class="tb-btn tb-btn-ghost" data-action="click->url-opener#save" data-url-opener-target="saveBtn" disabled>Save</button>
+        </div>
+        <div class="tb-mono tb-muted" style="font-size: 11px; margin-top: 8px;">
+          toolbench.app/o/<span data-url-opener-target="nameHint">mon-am</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="tb-seo">
+  <h2>How do I open multiple URLs at once?</h2>
+  <p>
+    Paste your list into the box. We'll parse URLs out of plain text, bullet lists, markdown links, or
+    comma-separated lines. Lines starting with <span class="tb-mono">#</span> are ignored so you can
+    annotate your list. Press <em>Open all</em> and every URL opens in a new tab.
+  </p>
+  <h3>Why is there a delay option?</h3>
+  <p>
+    Some browsers throttle rapid-fire <span class="tb-mono">window.open()</span> calls. A 150ms or 500ms gap
+    makes the pop-up sequence reliable at the cost of a fraction of a second per link.
+  </p>
+</section>

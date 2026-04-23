@@ -1,0 +1,21 @@
+<footer class="tb-footer">
+  <div class="tb-shell tb-footer-inner">
+    <div>
+      <span class="tb-wordmark" style="font-size: 13px;">
+        <span class="tb-wordmark-mark" style="width:16px;height:16px;border-radius:4px;" aria-hidden="true"></span>
+        <span>Toolbench</span>
+      </span>
+      <span style="margin-left: 14px;">v0.1 · MIT</span>
+    </div>
+    <div class="tb-footer-links">
+      <% if (src = ENV["SOURCE_URL"].presence) %>
+        <a href="<%= src %>" target="_blank" rel="noopener">Source</a>
+      <% end %>
+      <%= link_to "Changelog", changelog_path %>
+      <%= link_to "Privacy", privacy_path %>
+      <% if (coffee = ENV["COFFEE_URL"].presence) %>
+        <a href="<%= coffee %>" target="_blank" rel="noopener">Buy a coffee ☕</a>
+      <% end %>
+    </div>
+  </div>
+</footer>

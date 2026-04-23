@@ -1,0 +1,39 @@
+<section>
+  <div class="tb-eyebrow">Tool 03</div>
+  <h1 class="tb-h1" style="font-size: 48px; margin-top: 14px;">Is It Down?</h1>
+  <p class="tb-text" style="margin-top: 12px; max-width: 60ch;">
+    Paste one URL or a list of URLs. We'll check them from the server and give you a
+    shareable board — no account, no login, just a link.
+  </p>
+
+  <%= form_with url: boards_path, method: :post, local: true, class: "tb-stack-14", style: "margin-top: 28px;" do |f| %>
+    <div class="tb-card tb-card-pad">
+      <div class="tb-eyebrow" style="margin-bottom: 6px;">URLs</div>
+      <%= f.text_area :hosts, class: "tb-textarea", rows: 6, placeholder: "github.com&#10;notion.so&#10;your-side-project.app" %>
+      <div class="tb-mono tb-muted" style="font-size: 12px; margin-top: 8px;">
+        One per line, or comma-separated. Schemes and paths are ignored — we check the host.
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <%= f.text_field :name, class: "tb-input", placeholder: "board name (optional)", style: "max-width: 260px;" %>
+      <%= f.submit "Check now", class: "tb-btn tb-btn-primary tb-btn-lg" %>
+      <span class="tb-mono tb-muted" style="font-size: 12px;">· up to 25 hosts</span>
+    </div>
+  <% end %>
+</section>
+
+<section class="tb-seo">
+  <h2>How does this uptime check work?</h2>
+  <p>
+    We send an HTTPS <span class="tb-mono">HEAD</span> request from our server to each host you list. You get
+    the status code, response time, and a 24-point sparkline of recent outcomes. Every board gets a permanent
+    short URL you can share with your team — anyone can view it; only the creator (identified by a cookie) can
+    rename or delete it.
+  </p>
+  <h3>Why not use DownDetector?</h3>
+  <p>
+    DownDetector only covers popular sites. If your client's Shopify store or your friend's side project is down,
+    DownDetector has nothing to say. We check any URL you give us.
+  </p>
+</section>

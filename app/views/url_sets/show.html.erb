@@ -1,0 +1,64 @@
+<section data-controller="url-opener" data-url-opener-saved-value="true">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+    <div>
+      <div class="tb-eyebrow">Tool 04 · Saved set</div>
+      <h1 class="tb-h1" style="font-size: 40px; margin-top: 10px;"><%= @set.name %></h1>
+      <div class="tb-mono tb-muted" style="margin-top: 8px; font-size: 13px;">
+        <%= @set.urls.size %> URLs · created <%= time_ago_in_words(@set.created_at) %> ago ·
+        <span class="tb-mono">toolbench.app/o/<%= @set.slug %></span>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button class="tb-btn tb-btn-ghost" data-action="click->url-opener#copyShare" data-url="<%= url_set_url(slug: @set.slug) %>">Copy link</button>
+      <button class="tb-btn tb-btn-primary tb-btn-lg" data-action="click->url-opener#openAll" data-url-opener-target="openBtn">
+        Open all <%= @set.urls.size %>
+      </button>
+    </div>
+  </div>
+
+  <div class="tb-tool-layout" style="grid-template-columns: 1fr 300px; margin-top: 28px;">
+    <div class="tb-card">
+      <div data-url-opener-target="list">
+        <% @set.urls.each_with_index do |u, i| %>
+          <div class="tb-file-row" style="grid-template-columns: 40px 1fr 80px; gap: 12px;">
+            <span class="tb-mono" style="font-size: 11px; color: var(--tb-faint); text-align: right;">
+              <%= (i + 1).to_s.rjust(2, "0") %>
+            </span>
+            <div>
+              <div class="tb-mono tb-file-name" style="font-size: 13px;"><%= u %></div>
+            </div>
+            <div style="text-align: right;">
+              <a href="<%= u %>" target="_blank" rel="noopener" class="tb-btn tb-btn-quiet">open ↗</a>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <aside class="tb-stack-14">
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow" style="margin-bottom: 10px;">Delay</div>
+        <div class="tb-tabs">
+          <button class="tb-tab is-active" data-action="click->url-opener#setDelay" data-delay="0">0ms</button>
+          <button class="tb-tab" data-action="click->url-opener#setDelay" data-delay="150">150ms</button>
+          <button class="tb-tab" data-action="click->url-opener#setDelay" data-delay="500">500ms</button>
+        </div>
+        <div class="tb-mono tb-muted" style="font-size: 11px; margin-top: 10px;">
+          Your browser may ask to allow pop-ups. Allow once.
+        </div>
+      </div>
+
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow">Tip</div>
+        <div class="tb-text-sm" style="margin-top: 6px;">
+          Bookmark this page. Opening the set is one click away every time.
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <%# Inline the URLs for the Stimulus controller to read. %>
+  <script type="application/json" data-url-opener-target="seed">
+    <%= raw @set.urls.to_json %>
+  </script>
+</section>

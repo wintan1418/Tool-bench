@@ -1,0 +1,107 @@
+<%
+  labels = {
+    "merge"    => { drop: "Drop PDFs to merge",                  cta: "Merge & download",    out: "merged.pdf",     seo_title: "merge" },
+    "split"    => { drop: "Drop a PDF to split into pages",      cta: "Split & download",    out: "split.zip",      seo_title: "split" },
+    "rotate"   => { drop: "Drop a PDF to rotate pages",          cta: "Rotate & download",   out: "rotated.pdf",    seo_title: "rotate" },
+    "compress" => { drop: "Drop a PDF to compress",              cta: "Compress & download", out: "compressed.pdf", seo_title: "compress" }
+  }.fetch(@op)
+
+  seo_body = {
+    "merge"    => "Drop two or more PDFs onto the box. Drag to reorder them if needed, then hit Merge & download. One combined PDF is generated in your browser using pdf-lib. No upload, no page limit, no email wall.",
+    "split"    => "Drop a PDF, pick the pages you want to keep (or split into individual pages), and download the result as a ZIP. Everything happens on your device — the source PDF is never uploaded.",
+    "rotate"   => "Drop a PDF and rotate individual pages 90° clockwise. The operation is done with pdf-lib and preserves the original document structure. No upload.",
+    "compress" => "Drop a PDF and pick a compression level. Pages are re-rasterised in-browser at a lower DPI then re-encoded. Typical savings are 20–60%. For aggressive compression of scanned documents, server-side tools like Ghostscript still do better — we're honest about that."
+  }[@op]
+%>
+
+<section data-controller="pdf dropzone"
+         data-pdf-op-value="<%= @op %>"
+         data-action="dragover@window->dropzone#over drop@window->pdf#drop">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <div class="tb-eyebrow">Tool 02</div>
+      <h1 class="tb-h1" style="font-size: 48px; margin-top: 14px;">PDF tools</h1>
+      <p class="tb-text" style="margin-top: 8px;">Merge · split · rotate · compress — all locally, no uploads.</p>
+    </div>
+    <div class="tb-tabs">
+      <%= link_to "Merge",    pdf_path(op: "merge"),    class: ["tb-tab", ("is-active" if @op == "merge")] %>
+      <%= link_to "Split",    pdf_path(op: "split"),    class: ["tb-tab", ("is-active" if @op == "split")] %>
+      <%= link_to "Rotate",   pdf_path(op: "rotate"),   class: ["tb-tab", ("is-active" if @op == "rotate")] %>
+      <%= link_to "Compress", pdf_path(op: "compress"), class: ["tb-tab", ("is-active" if @op == "compress")] %>
+    </div>
+  </div>
+
+  <div class="tb-tool-layout" style="margin-top: 28px;">
+    <div>
+      <div class="tb-drop"
+           data-pdf-target="drop"
+           data-dropzone-target="zone"
+           data-action="click->pdf#pick dragover->dropzone#over dragleave->dropzone#leave drop->pdf#drop">
+        <svg class="tb-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>
+          <path d="M14 2v6h6"/>
+        </svg>
+        <div class="tb-drop-title"><%= labels[:drop] %></div>
+        <div class="tb-drop-sub">.pdf · any size · runs on your device</div>
+      </div>
+
+      <input type="file" accept="application/pdf,.pdf"
+             <%= "multiple" if @op == "merge" %>
+             data-pdf-target="input" data-action="change->pdf#picked" hidden>
+
+      <div data-pdf-target="files" class="tb-card" style="margin-top: 18px; display: none;"></div>
+
+      <% if @op == "compress" %>
+        <div data-pdf-target="compressOpts" class="tb-card tb-card-pad" style="margin-top: 16px; display:none;">
+          <div class="tb-eyebrow" style="margin-bottom: 8px;">Compression</div>
+          <div class="tb-tabs">
+            <button class="tb-tab" data-action="click->pdf#setCompress" data-level="low">Low (fastest)</button>
+            <button class="tb-tab is-active" data-action="click->pdf#setCompress" data-level="medium">Medium</button>
+            <button class="tb-tab" data-action="click->pdf#setCompress" data-level="high">High (smallest)</button>
+          </div>
+          <div class="tb-mono tb-muted" style="font-size: 12px; margin-top: 10px;">
+            Browser compression typically shrinks 20–60%. For aggressive text-PDF compression, server tools still win.
+          </div>
+        </div>
+      <% end %>
+
+      <div data-pdf-target="previewWrap" style="margin-top: 18px; display: none;">
+        <div class="tb-eyebrow" style="margin-bottom: 8px;">Preview · <span data-pdf-target="previewCount">0</span> pages</div>
+        <div data-pdf-target="preview" style="display:flex; gap: 6px; overflow-x: auto; padding: 6px 2px;"></div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow">Output</div>
+        <div class="tb-mono" style="font-size: 13px; margin: 10px 0 16px; color: var(--tb-ink-2); word-break: break-all;">
+          <span data-pdf-target="outName"><%= labels[:out] %></span>
+        </div>
+        <div class="tb-stack-6" style="margin-bottom: 18px;">
+          <div class="tb-receipt-row"><span>files</span><span data-pdf-target="statFiles">0</span></div>
+          <div class="tb-receipt-row"><span>pages</span><span data-pdf-target="statPages">0</span></div>
+          <div class="tb-receipt-row"><span>size in</span><span data-pdf-target="statIn">—</span></div>
+          <div class="tb-receipt-row"><span>size out (est)</span><span data-pdf-target="statOut">—</span></div>
+        </div>
+        <button class="tb-btn tb-btn-primary tb-btn-lg" style="width: 100%;"
+                data-pdf-target="runBtn"
+                data-action="click->pdf#run" disabled>
+          <%= labels[:cta] %>
+        </button>
+      </div>
+
+      <div class="tb-card tb-card-pad" style="margin-top: 16px;">
+        <div class="tb-eyebrow" style="color: var(--tb-green);">Privacy</div>
+        <div class="tb-text-sm" style="margin-top: 8px;">
+          This whole page is a static form. Your PDFs are parsed by <span class="tb-mono">pdf-lib</span> directly
+          in this tab. Nothing leaves your device.
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="tb-seo">
+  <h2>How do I <%= labels[:seo_title] %> a PDF?</h2>
+  <p><%= seo_body %></p>
+</section>

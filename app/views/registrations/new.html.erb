@@ -1,0 +1,42 @@
+<section style="max-width: 440px; margin: 40px auto 0;">
+  <div class="tb-eyebrow">Create account</div>
+  <h1 class="tb-h1" style="font-size: 40px; margin-top: 10px;">Free account.</h1>
+  <p class="tb-text" style="margin-top: 10px;">
+    Accounts are optional — the tools work without one. Signing up just gives you a dashboard
+    to keep saved invoices, boards and URL sets in one place.
+  </p>
+  <p class="tb-mono tb-muted" style="font-size: 12px; margin-top: 8px;">
+    We don't send marketing email. Ever.
+  </p>
+
+  <%= form_with model: @user, url: registration_path, class: "tb-stack-14", style: "margin-top: 24px;", local: true do |f| %>
+    <% if @user.errors.any? %>
+      <div class="tb-card tb-card-pad" style="border-color: var(--tb-red); color: var(--tb-red-deep);">
+        <ul style="margin: 0; padding-left: 18px;">
+          <% @user.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <label class="tb-eyebrow" style="display: block; margin-bottom: 6px;">Email</label>
+      <%= f.email_field :email_address, required: true, autofocus: true, autocomplete: "username", class: "tb-input", placeholder: "you@example.com" %>
+    </div>
+    <div>
+      <label class="tb-eyebrow" style="display: block; margin-bottom: 6px;">Password</label>
+      <%= f.password_field :password, required: true, autocomplete: "new-password", class: "tb-input", maxlength: 72 %>
+    </div>
+    <div>
+      <label class="tb-eyebrow" style="display: block; margin-bottom: 6px;">Confirm password</label>
+      <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password", class: "tb-input", maxlength: 72 %>
+    </div>
+
+    <%= f.submit "Create account", class: "tb-btn tb-btn-primary tb-btn-lg" %>
+  <% end %>
+
+  <div class="tb-mono tb-muted" style="font-size: 12px; margin-top: 28px; padding-top: 18px; border-top: 1px dashed var(--tb-line);">
+    Already have one? <%= link_to "Sign in", new_session_path, style: "color: var(--tb-red); text-decoration: underline;" %>
+  </div>
+</section>

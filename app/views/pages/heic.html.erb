@@ -1,0 +1,97 @@
+<section class="tb-tool-layout" data-controller="heic dropzone" data-action="dragover@window->dropzone#over dragleave@window->dropzone#leave drop@window->heic#drop">
+  <div>
+    <div class="tb-eyebrow">Tool 01</div>
+    <h1 class="tb-h1" style="font-size: 48px; margin-top: 14px;">HEIC → JPG</h1>
+    <p class="tb-text" style="margin-top: 14px; max-width: 56ch;">
+      Drop a pile of iPhone HEIC photos. We'll convert them to JPG, PNG or WebP right here
+      in your browser. Nothing leaves your device.
+    </p>
+
+    <div class="tb-drop"
+         data-heic-target="drop"
+         data-dropzone-target="zone"
+         data-action="click->heic#pick dragover->dropzone#over dragleave->dropzone#leave drop->heic#drop"
+         style="margin-top: 26px;">
+      <svg class="tb-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <path d="M17 8l-5-5-5 5"/>
+        <path d="M12 3v12"/>
+      </svg>
+      <div class="tb-drop-title">Drop HEIC photos here, or click to choose</div>
+      <div class="tb-drop-sub">.heic · .heif · any number of files · 0 bytes uploaded</div>
+    </div>
+
+    <input type="file" accept="image/heic,image/heif,.heic,.heif" multiple
+           data-heic-target="input" data-action="change->heic#picked" hidden>
+
+    <div data-heic-target="options" hidden style="margin-top: 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <div>
+        <div class="tb-eyebrow" style="margin-bottom: 6px;">Quality</div>
+        <div class="tb-tabs" data-heic-target="quality">
+          <button class="tb-tab" data-action="click->heic#setQuality" data-q="0.8">80</button>
+          <button class="tb-tab is-active" data-action="click->heic#setQuality" data-q="0.9">90</button>
+          <button class="tb-tab" data-action="click->heic#setQuality" data-q="1.0">100</button>
+        </div>
+      </div>
+      <div>
+        <div class="tb-eyebrow" style="margin-bottom: 6px;">Format</div>
+        <div class="tb-tabs" data-heic-target="format">
+          <button class="tb-tab is-active" data-action="click->heic#setFormat" data-f="image/jpeg">JPG</button>
+          <button class="tb-tab" data-action="click->heic#setFormat" data-f="image/png">PNG</button>
+          <button class="tb-tab" data-action="click->heic#setFormat" data-f="image/webp">WebP</button>
+        </div>
+      </div>
+
+      <span style="flex: 1;"></span>
+
+      <button class="tb-btn tb-btn-quiet" data-action="click->heic#clear">Clear</button>
+      <button class="tb-btn tb-btn-primary" data-action="click->heic#downloadZip" data-heic-target="zipBtn" disabled>
+        Download all as .zip
+      </button>
+    </div>
+
+    <div data-heic-target="list" class="tb-card" style="margin-top: 18px; display: none;"></div>
+  </div>
+
+  <aside>
+    <div class="tb-receipt">
+      <div class="tb-receipt-title">
+        <span class="tb-receipt-dot"></span>
+        <span>Live receipt</span>
+      </div>
+      <div class="tb-stack-6">
+        <div class="tb-receipt-row is-good"><span>bytes sent</span><span data-receipt-target="bytes" data-heic-target="bytesSent">0</span></div>
+        <div class="tb-receipt-row is-good"><span>bytes received</span><span>0</span></div>
+        <div class="tb-receipt-row"><span>worker</span><span>heic2any</span></div>
+        <div class="tb-receipt-row"><span>threads</span><span data-heic-target="threads">1</span></div>
+        <div class="tb-receipt-row"><span>files queued</span><span data-heic-target="queued">0</span></div>
+        <div class="tb-receipt-row"><span>files done</span><span data-heic-target="done">0</span></div>
+      </div>
+      <div class="tb-receipt-foot">
+        Open your browser DevTools. Watch the Network tab as you convert.
+        Zero requests to our origin. Verifiable.
+      </div>
+    </div>
+  </aside>
+</section>
+
+<section class="tb-seo">
+  <h2>How do I convert HEIC to JPG?</h2>
+  <p>
+    Drop any number of HEIC files onto the box above (or tap it on your phone to pick from your camera roll).
+    Each file is decoded locally in your browser using <span class="tb-mono">libheif</span> compiled to WebAssembly,
+    then re-encoded as JPG, PNG or WebP at the quality you pick. No upload step, no progress bar for "sending to
+    server" — just your CPU.
+  </p>
+  <h3>Why do iPhones save photos as HEIC?</h3>
+  <p>
+    HEIC (High Efficiency Image Container) gives photos that are roughly half the size of the equivalent JPG
+    with no visible quality loss. Great for Apple devices. Not great for Windows, Android, older CMSes, or the
+    friend you're trying to share a vacation album with.
+  </p>
+  <h3>Does this upload my photos?</h3>
+  <p>
+    No. The receipt card on this page reads your browser's resource timing API live. If this page makes a
+    network request back to us while converting, that counter ticks up. Try it yourself with DevTools open.
+  </p>
+</section>

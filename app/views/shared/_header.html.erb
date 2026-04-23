@@ -1,0 +1,44 @@
+<header class="tb-header">
+  <div class="tb-shell tb-header-inner">
+    <%= link_to root_path, class: "tb-wordmark" do %>
+      <span class="tb-wordmark-mark" aria-hidden="true"></span>
+      <span>Toolbench</span>
+    <% end %>
+
+    <nav class="tb-nav" aria-label="Primary">
+      <%= link_to "Home",    root_path,  class: ["tb-nav-link", ("is-active" if current_nav == :home)] %>
+      <%= link_to "HEIC",    heic_path,  class: ["tb-nav-link", ("is-active" if current_nav == :heic)] %>
+      <%= link_to "Images",  image_path(op: "compress"), class: ["tb-nav-link", ("is-active" if current_nav == :images)] %>
+      <%= link_to "PDF",     pdf_path(op: "merge"), class: ["tb-nav-link", ("is-active" if current_nav == :pdf)] %>
+      <%= link_to "Sign",    sign_path,  class: ["tb-nav-link", ("is-active" if current_nav == :sign)] %>
+      <%= link_to "Media",   media_path(op: "mp4-to-mp3"), class: ["tb-nav-link", ("is-active" if current_nav == :media)] %>
+      <%= link_to "Invoice", new_invoice_path, class: ["tb-nav-link", ("is-active" if current_nav == :invoice)] %>
+      <%= link_to "Down",    down_path,  class: ["tb-nav-link", ("is-active" if current_nav == :down)] %>
+      <%= link_to "URLs",    open_urls_path, class: ["tb-nav-link", ("is-active" if current_nav == :open)] %>
+    </nav>
+
+    <div class="tb-header-spacer"></div>
+
+    <div class="tb-header-right">
+      <% if %i[heic pdf images sign invoice media].include?(current_nav) %>
+        <span class="tb-receipt-compact" data-receipt-target="compact" title="We can't see your files. This counter is live.">
+          <span class="tb-receipt-dot"></span>
+          <span><span data-receipt-target="bytes">0</span> bytes sent</span>
+        </span>
+      <% end %>
+
+      <% if signed_in? %>
+        <%= link_to "Dashboard", dashboard_path, class: ["tb-nav-link", ("is-active" if current_nav == :dashboard)], style: "font-weight: 600;" %>
+      <% else %>
+        <%= link_to "Sign in", new_session_path, class: "tb-nav-link" %>
+        <%= link_to "Sign up", signup_path,      class: "tb-btn tb-btn-ghost", style: "height: 32px; padding: 0 12px; font-size: 13px;" %>
+      <% end %>
+
+      <% if (coffee = ENV["COFFEE_URL"].presence) %>
+        <a href="<%= coffee %>" class="tb-coffee" target="_blank" rel="noopener">
+          <span>☕</span><span>Coffee</span>
+        </a>
+      <% end %>
+    </div>
+  </div>
+</header>

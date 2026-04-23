@@ -1,0 +1,142 @@
+<section data-controller="invoice"
+         data-invoice-saved-value="<%= @invoice.persisted? %>"
+         data-invoice-slug-value="<%= @invoice.slug || "" %>"
+         data-invoice-signed-in-value="<%= signed_in? %>"
+         data-invoice-seed-value='<%= {
+           number: @invoice.number,
+           template: @invoice.template || "plain",
+           currency: @invoice.currency || "USD",
+           issued_on: @invoice.issued_on&.iso8601,
+           due_on: @invoice.due_on&.iso8601,
+           from_name: @invoice.from_name,
+           from_address: @invoice.from_address,
+           from_email: @invoice.from_email,
+           to_name: @invoice.to_name,
+           to_address: @invoice.to_address,
+           to_email: @invoice.to_email,
+           notes: @invoice.notes,
+           tax_rate: @invoice.tax_rate&.to_f,
+           line_items: (@invoice.line_items || [])
+         }.to_json %>'>
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <div class="tb-eyebrow">Tool 06</div>
+      <h1 class="tb-h1" style="font-size: 44px; margin-top: 14px;">Invoice maker</h1>
+      <p class="tb-text" style="margin-top: 8px;">
+        Pick a template, fill in the numbers, download a PDF. Runs in your browser.
+      </p>
+    </div>
+    <div class="tb-tabs" data-invoice-target="templates">
+      <button class="tb-tab is-active" data-action="click->invoice#setTemplate" data-template="plain">Plain</button>
+      <button class="tb-tab"            data-action="click->invoice#setTemplate" data-template="classic">Classic</button>
+      <button class="tb-tab"            data-action="click->invoice#setTemplate" data-template="modern">Modern</button>
+    </div>
+  </div>
+
+  <div class="tb-tool-layout" style="grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 28px;">
+    <%# ----- left: form ----- %>
+    <div class="tb-stack-20">
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow" style="margin-bottom: 10px;">Meta</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label class="tb-eyebrow" style="display:block; margin-bottom:4px;">Invoice #</label>
+            <input class="tb-input tb-mono" data-invoice-target="fNumber" data-action="input->invoice#change" placeholder="INV-1001">
+          </div>
+          <div>
+            <label class="tb-eyebrow" style="display:block; margin-bottom:4px;">Currency</label>
+            <select class="tb-input" data-invoice-target="fCurrency" data-action="change->invoice#change">
+              <option>USD</option><option>EUR</option><option>GBP</option>
+              <option>NGN</option><option>KES</option><option>ZAR</option>
+              <option>CAD</option><option>AUD</option><option>JPY</option><option>INR</option>
+            </select>
+          </div>
+          <div>
+            <label class="tb-eyebrow" style="display:block; margin-bottom:4px;">Issued</label>
+            <input type="date" class="tb-input" data-invoice-target="fIssued" data-action="change->invoice#change">
+          </div>
+          <div>
+            <label class="tb-eyebrow" style="display:block; margin-bottom:4px;">Due</label>
+            <input type="date" class="tb-input" data-invoice-target="fDue" data-action="change->invoice#change">
+          </div>
+        </div>
+      </div>
+
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow" style="margin-bottom: 10px;">From (you)</div>
+        <div class="tb-stack-10">
+          <input class="tb-input" placeholder="Your name or company" data-invoice-target="fFromName" data-action="input->invoice#change">
+          <textarea class="tb-textarea" rows="3" placeholder="Address" data-invoice-target="fFromAddress" data-action="input->invoice#change" style="min-height: 72px;"></textarea>
+          <input class="tb-input" placeholder="hello@you.com" data-invoice-target="fFromEmail" data-action="input->invoice#change">
+        </div>
+      </div>
+
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow" style="margin-bottom: 10px;">Bill to</div>
+        <div class="tb-stack-10">
+          <input class="tb-input" placeholder="Client name" data-invoice-target="fToName" data-action="input->invoice#change">
+          <textarea class="tb-textarea" rows="3" placeholder="Client address" data-invoice-target="fToAddress" data-action="input->invoice#change" style="min-height: 72px;"></textarea>
+          <input class="tb-input" placeholder="client@example.com" data-invoice-target="fToEmail" data-action="input->invoice#change">
+        </div>
+      </div>
+
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow" style="margin-bottom: 10px;">Line items</div>
+        <div data-invoice-target="items"></div>
+        <button class="tb-btn tb-btn-ghost" data-action="click->invoice#addItem" style="margin-top: 10px; border-style: dashed;">+ Add item</button>
+
+        <div style="margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label class="tb-eyebrow" style="display:block; margin-bottom:4px;">Tax rate %</label>
+            <input type="number" step="0.01" class="tb-input tb-mono" data-invoice-target="fTax" data-action="input->invoice#change" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow" style="margin-bottom: 10px;">Notes</div>
+        <textarea class="tb-textarea" rows="3" placeholder="Payment terms, thank-you note…" data-invoice-target="fNotes" data-action="input->invoice#change" style="min-height: 80px;"></textarea>
+      </div>
+    </div>
+
+    <%# ----- right: preview + actions ----- %>
+    <aside class="tb-stack-14">
+      <div class="tb-card" style="padding: 0; overflow: hidden;">
+        <div class="tb-card-pad" style="padding-bottom: 10px; display:flex; justify-content:space-between; align-items:baseline;">
+          <div class="tb-eyebrow">Preview</div>
+          <div class="tb-mono tb-muted" style="font-size: 12px;">
+            subtotal <span data-invoice-target="subtotal">—</span> · total <span data-invoice-target="total" style="color: var(--tb-ink); font-weight: 500;">—</span>
+          </div>
+        </div>
+        <div data-invoice-target="preview" style="padding: 18px 22px 22px; border-top: 1px dashed var(--tb-line); background: var(--tb-paper-2); min-height: 420px; font-size: 12px;"></div>
+      </div>
+
+      <div class="tb-card tb-card-pad">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="tb-btn tb-btn-primary tb-btn-lg" data-action="click->invoice#download">Download PDF</button>
+          <% if signed_in? %>
+            <button class="tb-btn tb-btn-ghost tb-btn-lg" data-action="click->invoice#save">
+              <%= @invoice.persisted? ? "Update saved" : "Save to dashboard" %>
+            </button>
+          <% else %>
+            <%= link_to "Sign in to save", new_session_path, class: "tb-btn tb-btn-ghost tb-btn-lg" %>
+          <% end %>
+        </div>
+        <% unless signed_in? %>
+          <div class="tb-mono tb-muted" style="font-size: 11px; margin-top: 10px;">
+            You don't need an account to download. Save is optional.
+          </div>
+        <% end %>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="tb-seo">
+  <h2>How do I make an invoice online for free?</h2>
+  <p>
+    Toolbench's invoice maker runs entirely in your browser. Pick a template (plain, classic, or modern),
+    fill in your details, add line items, and download a PDF. No account needed to download — accounts are
+    only for saving invoices to your dashboard for next time.
+  </p>
+</section>

@@ -1,0 +1,103 @@
+<%
+  meta = {
+    "mp4-to-mp3" => {
+      title:   "MP4 → MP3",
+      tool_no: "08",
+      accept:  "video/mp4,video/quicktime,.mp4,.m4a,.mov,audio/mp4",
+      drop:    "Drop MP4 files to extract audio",
+      cta:     "Extract MP3",
+      ext_in:  "mp4",
+      ext_out: "mp3",
+      note:    "Audio-only conversion is fast — usually seconds per track.",
+      seo_q:   "How do I extract MP3 audio from an MP4 video online?",
+      seo_a:   "Drop any MP4 (or MOV / M4A) onto the box. We decode the audio track in your browser using FFmpeg compiled to WebAssembly, then re-encode it as MP3. Nothing uploads — not even partially. If the file has multiple audio tracks, the first one is used.",
+      max_mb:  500
+    },
+    "webm-to-mp4" => {
+      title:   "WebM → MP4",
+      tool_no: "09",
+      accept:  "video/webm,.webm",
+      drop:    "Drop WebM files to convert",
+      cta:     "Convert to MP4",
+      ext_in:  "webm",
+      ext_out: "mp4",
+      note:    "Video transcoding in the browser is slower than desktop — expect roughly 2–3× the clip length. For files over ~200MB, a desktop tool will be faster.",
+      seo_q:   "How do I convert a WebM video to MP4 online?",
+      seo_a:   "Drop your WebM file onto the box. We transcode the VP8/VP9 video into H.264 MP4 in your browser using FFmpeg compiled to WebAssembly. It takes a while — browser transcoding is slower than desktop — but nothing uploads.",
+      max_mb:  200
+    }
+  }.fetch(@op)
+%>
+
+<section class="tb-tool-layout"
+         data-controller="media dropzone"
+         data-media-op-value="<%= @op %>"
+         data-media-ext-in-value="<%= meta[:ext_in] %>"
+         data-media-ext-out-value="<%= meta[:ext_out] %>"
+         data-action="dragover@window->dropzone#over drop@window->media#drop">
+  <div>
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <div class="tb-eyebrow">Tool <%= meta[:tool_no] %></div>
+        <h1 class="tb-h1" style="font-size: 44px; margin-top: 14px;"><%= meta[:title] %></h1>
+        <p class="tb-text" style="margin-top: 8px;"><%= meta[:note] %></p>
+      </div>
+      <div class="tb-tabs">
+        <%= link_to "MP4 → MP3",  media_path(op: "mp4-to-mp3"),  class: ["tb-tab", ("is-active" if @op == "mp4-to-mp3")] %>
+        <%= link_to "WebM → MP4", media_path(op: "webm-to-mp4"), class: ["tb-tab", ("is-active" if @op == "webm-to-mp4")] %>
+      </div>
+    </div>
+
+    <div class="tb-drop"
+         data-media-target="drop"
+         data-dropzone-target="zone"
+         data-action="click->media#pick dragover->dropzone#over dragleave->dropzone#leave drop->media#drop"
+         style="margin-top: 26px;">
+      <svg class="tb-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M23 7 16 12l7 5V7z"/>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+      </svg>
+      <div class="tb-drop-title"><%= meta[:drop] %></div>
+      <div class="tb-drop-sub">
+        up to ~<%= meta[:max_mb] %>MB per file · 0 bytes uploaded to our servers
+      </div>
+    </div>
+
+    <input type="file" accept="<%= meta[:accept] %>" multiple
+           data-media-target="input" data-action="change->media#picked" hidden>
+
+    <div data-media-target="list" class="tb-card" style="margin-top: 18px; display: none;"></div>
+
+    <div data-media-target="ffmpegStatus" class="tb-card tb-card-pad" style="margin-top: 14px; display: none;">
+      <div class="tb-eyebrow">FFmpeg runtime</div>
+      <div class="tb-mono tb-muted" style="font-size: 12px; margin-top: 6px;">
+        <span data-media-target="ffmpegStatusText">ready.</span>
+      </div>
+    </div>
+  </div>
+
+  <aside>
+    <div class="tb-receipt">
+      <div class="tb-receipt-title">
+        <span class="tb-receipt-dot"></span>
+        <span>Live receipt</span>
+      </div>
+      <div class="tb-stack-6">
+        <div class="tb-receipt-row is-good"><span>bytes sent to us</span><span data-receipt-target="bytes">0</span></div>
+        <div class="tb-receipt-row is-good"><span>files uploaded</span><span>0</span></div>
+        <div class="tb-receipt-row"><span>worker</span><span>ffmpeg.wasm</span></div>
+        <div class="tb-receipt-row"><span>files queued</span><span data-media-target="queued">0</span></div>
+        <div class="tb-receipt-row"><span>files done</span><span data-media-target="done">0</span></div>
+      </div>
+      <div class="tb-receipt-foot">
+        FFmpeg itself (the WebAssembly runtime) is loaded from a public CDN the first time
+        you use this tool, then cached by your browser. Your media files never leave this tab.
+      </div>
+    </div>
+  </aside>
+</section>
+
+<section class="tb-seo">
+  <h2><%= meta[:seo_q] %></h2>
+  <p><%= meta[:seo_a] %></p>
+</section>

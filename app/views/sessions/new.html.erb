@@ -1,0 +1,26 @@
+<section style="max-width: 420px; margin: 40px auto 0;">
+  <div class="tb-eyebrow">Sign in</div>
+  <h1 class="tb-h1" style="font-size: 40px; margin-top: 10px;">Welcome back.</h1>
+  <p class="tb-text" style="margin-top: 10px;">
+    An account is only needed to save things to your dashboard. Every free tool works signed-out too.
+  </p>
+
+  <%= form_with url: session_path, class: "tb-stack-14", style: "margin-top: 24px;", local: true do |f| %>
+    <div>
+      <label class="tb-eyebrow" style="display: block; margin-bottom: 6px;">Email</label>
+      <%= f.email_field :email_address, required: true, autofocus: true, autocomplete: "username", class: "tb-input", placeholder: "you@example.com", value: params[:email_address] %>
+    </div>
+    <div>
+      <label class="tb-eyebrow" style="display: block; margin-bottom: 6px;">Password</label>
+      <%= f.password_field :password, required: true, autocomplete: "current-password", class: "tb-input", maxlength: 72 %>
+    </div>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <%= f.submit "Sign in", class: "tb-btn tb-btn-primary tb-btn-lg" %>
+      <%= link_to "Forgot password?", new_password_path, class: "tb-btn tb-btn-quiet" %>
+    </div>
+  <% end %>
+
+  <div class="tb-mono tb-muted" style="font-size: 12px; margin-top: 28px; padding-top: 18px; border-top: 1px dashed var(--tb-line);">
+    New here? <%= link_to "Create an account", signup_path, style: "color: var(--tb-red); text-decoration: underline;" %>
+  </div>
+</section>

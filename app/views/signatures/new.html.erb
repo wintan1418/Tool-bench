@@ -1,0 +1,93 @@
+<section data-controller="sign dropzone" data-action="dragover@window->dropzone#over drop@window->sign#drop">
+  <div class="tb-eyebrow">Tool 07</div>
+  <h1 class="tb-h1" style="font-size: 44px; margin-top: 14px;">Sign PDF</h1>
+  <p class="tb-text" style="margin-top: 8px; max-width: 60ch;">
+    Add a signature to a PDF, right here in your browser. Draw it with your mouse or trackpad, type it,
+    or upload a PNG. Drag onto the page, resize, download. Nothing uploads.
+  </p>
+
+  <div class="tb-tool-layout" style="grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 28px;">
+    <div>
+      <div class="tb-drop"
+           data-sign-target="drop"
+           data-dropzone-target="zone"
+           data-action="click->sign#pick dragover->dropzone#over dragleave->dropzone#leave drop->sign#drop">
+        <svg class="tb-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>
+          <path d="M14 2v6h6"/>
+          <path d="m7 17 4-4 2 2 4-4"/>
+        </svg>
+        <div class="tb-drop-title">Drop a PDF, or click to choose</div>
+        <div class="tb-drop-sub">.pdf · stays on your device</div>
+      </div>
+
+      <input type="file" accept="application/pdf,.pdf" data-sign-target="pdfInput" data-action="change->sign#picked" hidden>
+
+      <div data-sign-target="pagesWrap" class="tb-card" style="margin-top: 18px; display: none;">
+        <div class="tb-card-pad" style="padding-bottom: 8px; display: flex; justify-content: space-between; align-items: baseline;">
+          <div class="tb-eyebrow">Pages</div>
+          <span class="tb-mono tb-muted" style="font-size: 11px;">click to place signature</span>
+        </div>
+        <div data-sign-target="pages" style="display: flex; flex-direction: column; gap: 10px; padding: 8px 18px 18px;"></div>
+      </div>
+    </div>
+
+    <aside class="tb-stack-14">
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow" style="margin-bottom: 10px;">Signature</div>
+        <div class="tb-tabs" data-sign-target="modeTabs" style="margin-bottom: 10px;">
+          <button class="tb-tab is-active" data-action="click->sign#mode" data-mode="draw">Draw</button>
+          <button class="tb-tab"            data-action="click->sign#mode" data-mode="type">Type</button>
+          <button class="tb-tab"            data-action="click->sign#mode" data-mode="upload">Upload</button>
+        </div>
+
+        <div data-sign-target="drawPanel">
+          <canvas data-sign-target="canvas" width="520" height="180" style="width: 100%; background: var(--tb-paper-2); border: 1px solid var(--tb-line-2); border-radius: 8px; touch-action: none; cursor: crosshair;"></canvas>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button class="tb-btn tb-btn-quiet" data-action="click->sign#clearPad">Clear</button>
+            <span style="flex: 1;"></span>
+            <label class="tb-eyebrow" style="align-self: center;">Colour</label>
+            <input type="color" value="#0f172a" data-sign-target="inkColor" data-action="input->sign#changeColor" style="width: 34px; height: 28px; border: 1px solid var(--tb-line-2); border-radius: 6px;">
+          </div>
+        </div>
+
+        <div data-sign-target="typePanel" hidden>
+          <input class="tb-input" placeholder="Your name" data-sign-target="typeText" data-action="input->sign#typedSig" style="font-family: 'Source Serif 4', serif; font-size: 24px; height: 60px;">
+          <div class="tb-mono tb-muted" style="font-size: 11px; margin-top: 6px;">Rendered as a signature-style cursive.</div>
+        </div>
+
+        <div data-sign-target="uploadPanel" hidden>
+          <input type="file" accept="image/png,image/jpeg" data-sign-target="sigInput" data-action="change->sign#uploadedSig" class="tb-input" style="padding-top: 8px;">
+          <div class="tb-mono tb-muted" style="font-size: 11px; margin-top: 6px;">PNG with transparency preferred.</div>
+        </div>
+      </div>
+
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow" style="margin-bottom: 8px;">Placement</div>
+        <div class="tb-text-sm" style="margin-bottom: 10px;">
+          Click anywhere on a page preview to drop the signature there. Drag to reposition, or use the corners to resize.
+        </div>
+        <button class="tb-btn tb-btn-primary tb-btn-lg" style="width: 100%;" data-sign-target="downloadBtn" data-action="click->sign#download" disabled>
+          Stamp &amp; download signed PDF
+        </button>
+      </div>
+
+      <div class="tb-card tb-card-pad">
+        <div class="tb-eyebrow" style="color: var(--tb-green);">Privacy</div>
+        <div class="tb-text-sm" style="margin-top: 6px;">
+          Signature images and the PDF never leave your browser. The only output is the file you
+          download. We intentionally do not store signed documents.
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="tb-seo">
+  <h2>How do I sign a PDF online without uploading it?</h2>
+  <p>
+    Drop the PDF onto the box, draw or type your signature, and click the page where you want it placed.
+    The signature is stamped onto the PDF with <span class="tb-mono">pdf-lib</span> right in this tab,
+    and downloaded directly. At no point does the document travel to a server.
+  </p>
+</section>
